@@ -1,0 +1,38 @@
+services:
+  db:
+    container_name: activities_db
+    image: postgres
+    environment:
+      POSTGRES_USER: akibaz
+      POSTGRES_PASSWORD: password
+      PGDATA: /data/postgres
+    ports:
+      - "5490:5432"
+    volumes:
+      - activities_db:/data/postgres
+    networks:
+      - activities_net
+    restart: unless-stopped
+  pgadmin:
+    container_name: activities_admin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@dpage.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-password}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    ports:
+      - "5090:80"
+    volumes:
+      - admin_db:/var/lib/pgadmin
+    networks:
+      - activities_net
+    restart: unless-stopped
+    depends_on:
+      - db
+
+volumes:
+  activities_db:
+  admin_db:
+networks:
+  activities_net:
+    driver: bridge
